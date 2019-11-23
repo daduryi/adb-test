@@ -1,3 +1,9 @@
+# 豆瓣租房顶贴程序
+```bash
+python douban_adb_c.py
+```
+
+# 记录
 ### 添加AVD虚拟器
 Android Studio 如何添加AVD模拟器
 - 打开Android Studio，在右上角选择AVD Manager。
@@ -89,6 +95,7 @@ adb shell monkey -p <packagename> -v 500
 
 ### dump页面内容
 adb shell uiautomator dump /sdcard/uidump.xml
+https://testerhome.com/topics/1047
 
 ### 某blog
 https://blog.csdn.net/slaron/article/details/78294833
