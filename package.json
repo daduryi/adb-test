@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@types/node": "^12.12.11",
+    "@types/tesseract.js": "0.0.2",
+    "puppeteer": "^2.0.0",
+    "tesseract.js": "^1.0.19"
+  }
+}
