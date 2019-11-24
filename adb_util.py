@@ -41,6 +41,22 @@ class Element(object):
 
                 return Xpoint, Ypoint
 
+    def __elementRe(self, attrib, name):
+        """
+        同属性单个元素，返回单个坐标元组
+        """
+        self.__uidump()
+        tree = ET.ElementTree(file=self.tempFile + "/uidump.xml")
+        treeIter = tree.iter(tag="node")
+        for elem in treeIter:
+            if name in elem.attrib[attrib]:
+                bounds = elem.attrib["bounds"]
+                coord = self.pattern.findall(bounds)
+                Xpoint = (int(coord[2]) - int(coord[0])) / 2.0 + int(coord[0])
+                Ypoint = (int(coord[3]) - int(coord[1])) / 2.0 + int(coord[1])
+
+                return Xpoint, Ypoint
+
 
     def __elements(self, attrib, name):
         """
@@ -65,6 +81,19 @@ class Element(object):
         usage: findElementByName(u"相机")
         """
         return self.__element("text", name)
+
+    def find(self):
+        '''
+        查找符合某个包含关系的element
+        :return: 
+        '''
+
+    def findElementByReName(self, name):
+        """
+        通过元素名称定位
+        usage: findElementByName(u"相机")
+        """
+        return self.__elementRe("text", name)
 
     def findElementsByName(self, name):
         return self.__elements("text", name)

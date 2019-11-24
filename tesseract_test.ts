@@ -7,6 +7,11 @@ import * as Tesseract from 'tesseract.js'
 //   console.log(text);
 // })
 
+/**
+ * 测试node tesseract 模块文字识别
+ * 这是只是一个文字识别, 算不上验证码识别
+ */
+
 Tesseract.recognize(
   // 'https://tesseract.projectnaptha.com/img/eng_bw.png',
   // './captcha.jpeg',

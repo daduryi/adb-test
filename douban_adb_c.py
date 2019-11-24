@@ -23,7 +23,7 @@ class Douban(object):
         self.element = Element()
         self.event = Event()
         self.alist = alist
-        self.text_i = 1
+        self.text_i = 15
 
     def random_text(self):
         # return random.choice(
@@ -122,6 +122,9 @@ class Douban(object):
     def touchGroupTab(self):
         self.event.touch(540, 2300)
 
+    def touchMineTab(self):
+        self.event.touch(960, 2300)
+
     def reply(self):
 
         self.event.touch(50, 2200)
@@ -147,8 +150,12 @@ class Douban(object):
         point = self.element.findElementByName('慢慢来哈')
         log(point)
 
+    def startApp(self):
+        self.event.startApp('com.douban.frodo', 'MainActivity')
+        time.sleep(10)
+
     def once(self):
-        douban.touchGroupTab()
+        self.touchGroupTab()
         self.touchByText('全部')
         for d in self.alist:
             self.touchByText(d['group'])
@@ -167,7 +174,7 @@ class Douban(object):
 
                 self.event.swipe_up(1150)
                 count += 1
-                if count > 5000:
+                if count > 1000:
                     break
 
             while True:
@@ -175,18 +182,45 @@ class Douban(object):
                 if self.element.findElementByName('管理我的小组'):
                     break
 
+    def do2(self):
+        self.event.touchHome()
+        self.startApp()
+        self.touchMineTab()
+        self.event.swipe_up(1000)
+        self.touchByText('豆列 / 收藏')
+        self.touchByText('租房')
+        for i in range(1, 4):
+            for _ in range(3):
+                r = self.element.findElementByReName('第{}个'.format(i))
+                if r:
+                    self.event.touch(*r)
+                    time.sleep(2)
+                    self.reply()
+
+                    for _ in range(5):
+                        self.event.touchBack()
+                        time.sleep(1)
+                        if self.element.findElementByName('租房'):
+                            break
+
+                    break
+                self.event.swipe_up(1200)
+
+        self.event.touchHome()
+
+
     def loop(self):
 
         while True:
-            self.event.touchHome()
+            # self.event.touchHome()
             now = datetime.datetime.now()
-            if 0 < now.hour < 7:
+            if 0 <= now.hour < 7:
                 time.sleep(random.randint(1, 30) * 60)
                 continue
             try:
-                self.event.startApp('com.douban.frodo', 'MainActivity')
-                time.sleep(10)
-                self.once()
+                # self.startApp()
+
+                self.do2()
             except:
                 pass
 
