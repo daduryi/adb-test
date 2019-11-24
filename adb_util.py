@@ -10,6 +10,7 @@ class Element(object):
     """
     通过元素定位,需要Android 4.0以上
     """
+
     def __init__(self):
         """
         初始化，获取系统临时文件存储目录，定义匹配数字模式
@@ -25,7 +26,13 @@ class Element(object):
         os.system("adb shell uiautomator dump /sdcard/uidump.xml")
         os.system("adb pull /sdcard/uidump.xml " + self.tempFile)
 
-    def __element(self, attrib, name):
+    def __elementEqual(self, attrib, name):
+        return self.__elementFunc(lambda elem: elem[attrib] == name)
+
+    def __elementReMatch(self, attrib, pattern):
+        return self.__elementFunc(lambda elem: bool(re.match(pattern, elem[attrib])))
+
+    def __elementFunc(self, func):
         """
         同属性单个元素，返回单个坐标元组
         """
@@ -33,30 +40,13 @@ class Element(object):
         tree = ET.ElementTree(file=self.tempFile + "/uidump.xml")
         treeIter = tree.iter(tag="node")
         for elem in treeIter:
-            if elem.attrib[attrib] == name:
+            if func(elem.attrib):
                 bounds = elem.attrib["bounds"]
                 coord = self.pattern.findall(bounds)
                 Xpoint = (int(coord[2]) - int(coord[0])) / 2.0 + int(coord[0])
                 Ypoint = (int(coord[3]) - int(coord[1])) / 2.0 + int(coord[1])
 
                 return Xpoint, Ypoint
-
-    def __elementRe(self, attrib, name):
-        """
-        同属性单个元素，返回单个坐标元组
-        """
-        self.__uidump()
-        tree = ET.ElementTree(file=self.tempFile + "/uidump.xml")
-        treeIter = tree.iter(tag="node")
-        for elem in treeIter:
-            if name in elem.attrib[attrib]:
-                bounds = elem.attrib["bounds"]
-                coord = self.pattern.findall(bounds)
-                Xpoint = (int(coord[2]) - int(coord[0])) / 2.0 + int(coord[0])
-                Ypoint = (int(coord[3]) - int(coord[1])) / 2.0 + int(coord[1])
-
-                return Xpoint, Ypoint
-
 
     def __elements(self, attrib, name):
         """
@@ -80,7 +70,7 @@ class Element(object):
         通过元素名称定位
         usage: findElementByName(u"相机")
         """
-        return self.__element("text", name)
+        return self.__elementEqual("text", name)
 
     def find(self):
         '''
@@ -88,12 +78,12 @@ class Element(object):
         :return: 
         '''
 
-    def findElementByReName(self, name):
+    def findElementByReMatchName(self, pattern):
         """
         通过元素名称定位
         usage: findElementByName(u"相机")
         """
-        return self.__elementRe("text", name)
+        return self.__elementReMatch("text", pattern)
 
     def findElementsByName(self, name):
         return self.__elements("text", name)
@@ -103,7 +93,7 @@ class Element(object):
         通过元素类名定位
         usage: findElementByClass("android.widget.TextView")
         """
-        return self.__element("class", className)
+        return self.__elementEqual("class", className)
 
     def findElementsByClass(self, className):
         return self.__elements("class", className)
@@ -113,10 +103,10 @@ class Element(object):
         通过元素的resource-id定位
         usage: findElementsById("com.android.deskclock:id/imageview")
         """
-        return self.__element("resource-id",id)
+        return self.__elementEqual("resource-id", id)
 
     def findElementsById(self, id):
-        return self.__elements("resource-id",id)
+        return self.__elements("resource-id", id)
 
 
 class Event(object):
@@ -152,7 +142,8 @@ class Event(object):
         time.sleep(self.touch_time or self.default_time)
 
     def text(self, text):
-        os.system('adb shell am broadcast -a ADB_INPUT_TEXT --es msg "{}"'.format(text))
+        os.system(
+            'adb shell am broadcast -a ADB_INPUT_TEXT --es msg "{}"'.format(text))
         time.sleep(self.text_time or self.default_time)
 
     def touchBack(self):
@@ -172,22 +163,27 @@ class Event(object):
     def swipe_up(self, y):
         if y < 1:
             y = self.height * y
-        self.swipe_int_wrapper(self.width * 0.7, self.height * 0.8, self.width * 0.7, self.height - y)
+        self.swipe_int_wrapper(
+            self.width * 0.7, self.height * 0.8, self.width * 0.7, self.height - y)
 
     def swipe_down(self, y):
         if y < 1:
             y = self.height * y
-        self.swipe_int_wrapper(self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height + y)
+        self.swipe_int_wrapper(
+            self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height + y)
 
     def swipe_left(self, y):
         if y < 1:
             y = self.width * y
-        self.swipe_int_wrapper(self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height - y)
+        self.swipe_int_wrapper(
+            self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height - y)
 
     def swipe_right(self, y):
         if y < 1:
             y = self.width * y
-        self.swipe_int_wrapper(self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height - y)
+        self.swipe_int_wrapper(
+            self.width * 0.7, self.height * 0.3, self.width * 0.7, self.height - y)
+
 
 def test():
     element = Element()
@@ -199,7 +195,3 @@ def test():
 
     e2 = element.findElementByName(u"手机充值")
     evevt.touch(e2[0], e2[1])
-
-
-
-

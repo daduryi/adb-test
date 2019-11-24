@@ -1,2 +1,4 @@
 node_modules/
 eng.traineddata
+.vscode/
+__pycache__
