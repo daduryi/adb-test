@@ -230,6 +230,7 @@ class Douban(object):
             time.sleep(sleep)
 
             self.text_i += 1
+            log('text_i', self.text_i)
 
 
 alist = [
